@@ -1,0 +1,41 @@
+package com.uade.tpejemplo.service.impl;
+
+import com.uade.tpejemplo.service.DashboardService;
+import com.uade.tpejemplo.dto.response.DashboardStatsResponseDTO;
+import com.uade.tpejemplo.repository.ClienteRepository;
+import com.uade.tpejemplo.repository.CreditoRepository;
+import com.uade.tpejemplo.repository.CobranzaRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class DashboardServiceImpl implements DashboardService {
+
+    // Inyectamos los repositorios ya provistos por la cátedra
+    private final ClienteRepository clienteRepository;
+    private final CreditoRepository creditoRepository;
+    private final CobranzaRepository cobranzaRepository;
+
+    public DashboardServiceImpl(ClienteRepository clienteRepository, 
+                                CreditoRepository creditoRepository, 
+                                CobranzaRepository cobranzaRepository) {
+        this.clienteRepository = clienteRepository;
+        this.creditoRepository = creditoRepository;
+        this.cobranzaRepository = cobranzaRepository;
+    }
+
+    @Override
+    public DashboardStatsResponseDTO obtenerEstadisticasGenerales() {
+        Long clientes = clienteRepository.count();
+        Long creditos = creditoRepository.count();
+        
+
+        // NOTA: Deberás agregar métodos personalizados (como @Query de suma) 
+        // en tus Repositories si el proyecto base no los trae por defecto.
+
+        Double totalFinanciado = creditoRepository.sumMontoTotal(); 
+ 
+        Double totalCobrado = cobranzaRepository.sumMontoTotal();   
+
+        return new DashboardStatsResponseDTO(clientes, creditos, totalFinanciado, totalCobrado);
+    }
+}
