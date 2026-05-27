@@ -3,8 +3,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
-@NoArgsConstructor // ¡Indispensable!
+@NoArgsConstructor
 @AllArgsConstructor
 public class DashboardStatsResponseDTO {
     private Long cantidadClientes;

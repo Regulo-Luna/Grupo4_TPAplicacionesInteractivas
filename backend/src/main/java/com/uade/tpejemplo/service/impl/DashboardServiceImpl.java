@@ -25,16 +25,11 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardStatsResponseDTO obtenerEstadisticasGenerales() {
-        Long clientes = clienteRepository.count();
-        Long creditos = creditoRepository.count();
-        
+        long clientes = clienteRepository.count();
+        long creditos = creditoRepository.count();
 
-        // NOTA: Deberás agregar métodos personalizados (como @Query de suma) 
-        // en tus Repositories si el proyecto base no los trae por defecto.
-
-        Double totalFinanciado = creditoRepository.sumMontoTotal(); 
- 
-        Double totalCobrado = cobranzaRepository.sumMontoTotal();   
+        double totalFinanciado = creditoRepository.sumMontoTotal();
+        double totalCobrado = cobranzaRepository.sumMontoTotal();
 
         return new DashboardStatsResponseDTO(clientes, creditos, totalFinanciado, totalCobrado);
     }

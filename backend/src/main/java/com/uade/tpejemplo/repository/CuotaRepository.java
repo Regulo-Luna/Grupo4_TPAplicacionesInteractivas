@@ -11,4 +11,5 @@ import java.util.List;
 public interface CuotaRepository extends JpaRepository<Cuota, CuotaId> {
 
     List<Cuota> findByIdIdCredito(Long idCredito);
+    
 }

@@ -14,7 +14,7 @@ public interface CobranzaRepository extends JpaRepository<Cobranza, Long> {
 
     boolean existsByCuotaIdIdCreditoAndCuotaIdIdCuota(Long idCredito, Integer idCuota);
 
-    @Query("SELECT SUM(c.importe) FROM Cobranza c")
+    @Query("SELECT COALESCE(SUM(c.importe), 0) FROM Cobranza c")
     Double sumMontoTotal();
     
 }

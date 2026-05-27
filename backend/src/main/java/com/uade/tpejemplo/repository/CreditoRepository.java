@@ -12,11 +12,9 @@ public interface CreditoRepository extends JpaRepository<Credito, Long> {
 
     List<Credito> findByClienteDni(String dni);
 
-    // 1. Suma el total financiado
-    @Query("SELECT SUM(c.importeCuota) FROM Credito c")
+    @Query("SELECT COALESCE(SUM(c.importeCuota), 0) FROM Credito c")
     Double sumMontoTotal();
 
-    // 2. Cuenta la cantidad total de créditos (útil para las estadísticas)
     @Query("SELECT COUNT(c) FROM Credito c")
     Long countAll();
 }
