@@ -27,21 +27,23 @@ tpejemplo/
 ├── backend/               → Proyecto Spring Boot (Maven)
 │   └── src/main/java/com/uade/tpejemplo/
 │       ├── config/        → SecurityConfig (JWT + stateless)
-│       ├── controller/    → AuthController, ClienteController, CreditoController, CobranzaController
+│       ├── controller/    → AuthController, ClienteController, CreditoController, CobranzaController, DashboardStatsController, MetaCobranzaController
 │       ├── dto/
-│       │   ├── request/   → ClienteRequest, CreditoRequest, CobranzaRequest, LoginRequest, RegisterRequest
-│       │   └── response/  → ClienteResponse, CreditoResponse, CuotaResponse, CobranzaResponse, AuthResponse
+│       │   ├── request/   → ClienteRequest, CreditoRequest, CobranzaRequest, LoginRequest, RegisterRequest, MetaCobranzaRequest
+│       │   └── response/  → ClienteResponse, CreditoResponse, CuotaResponse, CobranzaResponse, AuthResponse, DashboardStatsResponseDTO
 │       ├── exception/     → ResourceNotFoundException, BusinessException, GlobalExceptionHandler
-│       ├── model/         → Cliente, Credito, Cuota, CuotaId, Cobranza, Usuario, Rol
-│       ├── repository/    → ClienteRepository, CreditoRepository, CuotaRepository, CobranzaRepository, UsuarioRepository
+│       ├── model/         → Cliente, Credito, Cuota, CuotaId, Cobranza, Usuario, Rol, MetaCobranza
+│       ├── repository/    → ClienteRepository, CreditoRepository, CuotaRepository, CobranzaRepository, UsuarioRepository, MetaCobranzaRepository
 │       ├── security/      → JwtUtil, JwtAuthFilter, UserDetailsServiceImpl
 │       └── service/
 │           ├── ClienteService / ClienteServiceImpl
 │           ├── CreditoService / CreditoServiceImpl
-│           └── CobranzaService / CobranzaServiceImpl
+│           ├── CobranzaService / CobranzaServiceImpl
+|           ├── MontoCobranzaService / MetaCobranzaServiceImpl
+|           └── DashboardService / DashboardServiceImpl
 └── frontend/              → Proyecto React + Vite
     └── src/
-        ├── api/           → apiClient.js, auth.js, clientes.js, creditos.js, cobranzas.js
+        ├── api/           → apiClient.js, auth.js, clientes.js, creditos.js, cobranzas.js, metaCobranza.js
         ├── components/    → Navbar.jsx, PrivateRoute.jsx
         ├── store/
         │   ├── index.js                  → configureStore (combina reducers)
@@ -50,7 +52,7 @@ tpejemplo/
         │       ├── clientesSlice.js      → fetchClientes + addCliente
         │       ├── creditosSlice.js      → fetchCreditosPorCliente + addCredito
         │       └── cobranzasSlice.js     → fetchCobranzasPorCredito + addCobranza
-        └── pages/         → Login.jsx, Register.jsx, Clientes.jsx, Creditos.jsx, Cobranzas.jsx
+        └── pages/         → Login.jsx, Register.jsx, Clientes.jsx, Creditos.jsx, Cobranzas.jsx, Dashboard.jsx, MetaCobranza.jsx
 ```
 
 ---
