@@ -99,6 +99,13 @@ tpejemplo/
 | password | String (BCrypt) | Contraseña encriptada |
 | rol | Enum (ADMIN/USER) | Rol del usuario |
 
+### MetaCobranza
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | Long (PK, auto) | Identificador |
+| mes | String (unique) | Nombre de usuario |
+| montoObjetivo | String (BCrypt) | Contraseña encriptada |
+
 ---
 
 ## API REST
@@ -129,6 +136,18 @@ tpejemplo/
 | POST | `/api/cobranzas` | Registrar pago de una cuota |
 | GET | `/api/cobranzas/credito/{idCredito}` | Cobranzas de un crédito |
 
+### Dashboard (requiere JWT)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/dashboard` | Estadísticas |
+
+### Meta Cobranza (requiere JWT)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/metacobranza` | Ver la meta que se quiere llegar |
+| POST | `/api/metacobranza` | Agregar la meta que se quiere llegar |
+| PUT | `/api/metacobranza/{id}` | Actualizar la meta que se quiere llegar |
+| DELETE | `/api/metacobranza/{id}` | Borrar la meta que se quiere llegar |
 ---
 
 ## Seguridad JWT
@@ -199,6 +218,7 @@ Cada operación asíncrona usa `createAsyncThunk`, que maneja automáticamente l
 | `/clientes` | Clientes.jsx | Privado |
 | `/creditos` | Creditos.jsx | Privado |
 | `/cobranzas` | Cobranzas.jsx | Privado |
+| '/estadisticas | Dashboard.jsx | Privado |
 
 ---
 
