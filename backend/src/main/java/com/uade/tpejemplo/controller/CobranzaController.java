@@ -27,4 +27,10 @@ public class CobranzaController {
     public ResponseEntity<List<CobranzaResponse>> listarPorCredito(@PathVariable Long idCredito) {
         return ResponseEntity.ok(cobranzaService.listarPorCredito(idCredito));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> anularCobranza(@PathVariable Long id) {
+    cobranzaService.anularCobranza(id);
+    return ResponseEntity.ok(java.util.Map.of("mensaje", "Cobranza anulada exitosamente"));
+}
 }

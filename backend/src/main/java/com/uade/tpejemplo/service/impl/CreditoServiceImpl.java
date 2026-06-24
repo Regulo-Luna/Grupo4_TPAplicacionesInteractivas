@@ -14,8 +14,11 @@ import com.uade.tpejemplo.repository.CreditoRepository;
 import com.uade.tpejemplo.repository.CuotaRepository;
 import com.uade.tpejemplo.service.CreditoService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,8 @@ public class CreditoServiceImpl implements CreditoService {
             request.getFecha(),
             request.getImporteCuota(),
             request.getCantidadCuotas(),
-            null
+            null,
+            false
         );
         creditoRepository.save(credito);
 
@@ -104,8 +108,29 @@ public class CreditoServiceImpl implements CreditoService {
             credito.getFecha(),
             credito.getImporteCuota(),
             credito.getCantidadCuotas(),
-            cuotasResponse
+            cuotasResponse,
+            credito.isAnulado()
         );
     }
+    @Override
+    public void anularCredito(Long id) {
+        // 1. Buscamos el crédito en la base de datos
+        Credito credito = creditoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Crédito no encontrado"));
+
+        // 2. REGLA DE NEGOCIO: Validar que el crédito no tenga cobranzas registradas
+        // Nota: Asegúrate de declarar "boolean existsByCreditoId(Long id);" en tu CobranzaRepository
+        if (cobranzaRepository.existsByCreditoId(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "No se puede anular el crédito " + id + " porque tiene cobranzas registradas.");
+        }
+
+        // 3. Marcamos el crédito como anulado (Soft Delete / Borrado lógico)
+        credito.setAnulado(true);
+
+        // 4. Persistimos el cambio en la base de datos
+        creditoRepository.save(credito);
+    }
+
     
 }

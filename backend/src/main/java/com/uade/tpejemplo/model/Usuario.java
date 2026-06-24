@@ -34,10 +34,14 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private Rol rol;
 
+    private boolean puedeAnularCredito = false;
+    private boolean puedeAnularCobranza = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
+
 
     @Override public boolean isAccountNonExpired()  { return true; }
     @Override public boolean isAccountNonLocked()   { return true; }

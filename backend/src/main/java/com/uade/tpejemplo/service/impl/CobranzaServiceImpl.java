@@ -11,8 +11,12 @@ import com.uade.tpejemplo.repository.CobranzaRepository;
 import com.uade.tpejemplo.repository.CuotaRepository;
 import com.uade.tpejemplo.service.CobranzaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -37,7 +41,13 @@ public class CobranzaServiceImpl implements CobranzaService {
             );
         }
 
-        Cobranza cobranza = new Cobranza(null, cuota, request.getImporte());
+        Cobranza cobranza = new Cobranza(
+            null, 
+            cuota, 
+            request.getImporte(), 
+            LocalDate.now(),
+            false            
+        );
         cobranzaRepository.save(cobranza);
         return toResponse(cobranza);
     }
@@ -54,7 +64,22 @@ public class CobranzaServiceImpl implements CobranzaService {
             cobranza.getId(),
             cobranza.getCuota().getId().getIdCredito(),
             cobranza.getCuota().getId().getIdCuota(),
-            cobranza.getImporte()
+            cobranza.getImporte(),
+            cobranza.getFechaCobranza(),
+            cobranza.isAnulada()
         );
     }
+    public void anularCobranza(Long id) {
+    Cobranza cobranza = cobranzaRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cobranza no encontrada"));
+
+    // Regla de Negocio: Validar fecha
+    if (!cobranza.getFechaCobranza().isEqual(LocalDate.now())) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                 "Solo se pueden anular cobranzas del día de hoy.");
+    }
+
+    cobranza.setAnulada(true);
+    cobranzaRepository.save(cobranza);
+}
 }
