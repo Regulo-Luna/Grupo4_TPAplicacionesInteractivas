@@ -26,7 +26,6 @@ export default function Navbar() {
           <Link to="/cobranzas" style={styles.link}>Cobranzas</Link>
           <Link to="/estadisticas" style={styles.link}>Estadísticas</Link>
           
-          {/* Renderizado condicional: Solo se muestra si es ADMIN */}
           {isAdmin && (
              <Link to="/admin/permisos" style={styles.adminLink}>Gestor de Permisos</Link>
           )}

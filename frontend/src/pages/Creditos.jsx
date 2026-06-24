@@ -5,7 +5,6 @@ import { fetchCreditosPorCliente, addCredito, clearCreditos, anularCreditoThunk 
 export default function Creditos() {
   const dispatch = useDispatch();
   
-  // Obtenemos el usuario y el estado de los créditos de Redux
   const { user } = useSelector((state) => state.auth);
   console.log("Usuario actual en Redux:", user);
   const { lista, loading, error } = useSelector((state) => state.creditos);
@@ -46,7 +45,6 @@ export default function Creditos() {
     }
   };
 
-  // Protegemos la lista para que map no falle si es undefined
   const creditosSeguros = lista || [];
 
   return (

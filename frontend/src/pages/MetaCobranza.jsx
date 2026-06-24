@@ -4,13 +4,10 @@ import { fetchMetas, addMeta, editMeta, removeMeta } from '../store/slices/metaC
 
 const MetaCobranza = () => {
     const dispatch = useDispatch();
-    // Leemos la lista y estados desde Redux
     const { lista: metas, loading, error } = useSelector((state) => state.metas);
     
     const { user } = useSelector((state) => state.auth);
-    // Verificamos si es administrador (ajusta 'ADMIN' según cómo lo devuelva tu backend)
     const isAdmin = user?.rol === 'ADMIN';
-    // Estados locales (Solo para controlar la interfaz del formulario)
     const [formData, setFormData] = useState({ mes: '', montoObjetivo: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -29,7 +26,6 @@ const MetaCobranza = () => {
         e.preventDefault();
         try {
             if (isEditing) {
-                // Pasamos el ID y la data como un objeto al Thunk
                 await dispatch(editMeta({ id: editingId, data: formData })).unwrap();
             } else {
                 await dispatch(addMeta(formData)).unwrap();
@@ -39,7 +35,6 @@ const MetaCobranza = () => {
             setIsEditing(false);
             setEditingId(null);
             
-            // Recargamos la lista actualizada
             dispatch(fetchMetas());
         } catch (err) {
             alert("Error al guardar/actualizar: " + (err || "Error desconocido"));
@@ -63,7 +58,6 @@ const MetaCobranza = () => {
             
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             
-            {/* 1. Ocultamos todo el formulario de creación/edición a los usuarios normales */}
             {isAdmin && (
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <input 
@@ -104,7 +98,6 @@ const MetaCobranza = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Un pequeño ajuste de seguridad aquí: usar metas?.length por si la lista tarda en cargar */}
                     {loading && metas?.length === 0 && (
                         <tr><td colSpan={isAdmin ? "3" : "2"}>Cargando metas...</td></tr>
                     )}
@@ -113,7 +106,6 @@ const MetaCobranza = () => {
                             <td>{m.mes}</td>
                             <td>${Number(m.montoObjetivo).toLocaleString()}</td>
                             
-                            {/* 3. Ocultamos los botones de la tabla */}
                             {isAdmin && (
                                 <td>
                                     <button onClick={() => startEdit(m)} style={styles.buttonEdit} disabled={loading}>Editar</button>

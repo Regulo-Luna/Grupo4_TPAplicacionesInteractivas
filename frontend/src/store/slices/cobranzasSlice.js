@@ -40,21 +40,17 @@ const cobranzasSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch
       .addCase(fetchCobranzasPorCredito.pending,   (state) => { state.loading = true;  state.error = null; })
       .addCase(fetchCobranzasPorCredito.fulfilled, (state, action) => { state.loading = false; state.lista = action.payload; })
       .addCase(fetchCobranzasPorCredito.rejected,  (state, action) => { state.loading = false; state.error = action.payload; })
       
-      // Add
       .addCase(addCobranza.pending,                (state) => { state.loading = true;  state.error = null; })
       .addCase(addCobranza.fulfilled,              (state, action) => { state.loading = false; state.lista.push(action.payload); })
       .addCase(addCobranza.rejected,               (state, action) => { state.loading = false; state.error = action.payload; })
 
-      // Anular (NUEVO CASO)
       .addCase(anularCobranzaThunk.pending,        (state) => { state.loading = true; state.error = null; })
       .addCase(anularCobranzaThunk.fulfilled,      (state, action) => {
         state.loading = false;
-        // Buscamos la cobranza y la marcamos como anulada
         const index = state.lista.findIndex(c => c.id === action.payload);
         if (index !== -1) {
           state.lista[index].anulada = true;

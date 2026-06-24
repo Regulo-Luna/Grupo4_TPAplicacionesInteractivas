@@ -1,26 +1,22 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsuariosAdmin, togglePermiso } from '../store/slices/permisosSlice'; // Verifica que esta ruta coincida con tu proyecto
+import { fetchUsuariosAdmin, togglePermiso } from '../store/slices/permisosSlice';
 
   const GestorPermisos = () => {
   const dispatch = useDispatch();
-  // Traemos la lista de usuarios, el estado de carga y posibles errores de Redux
   const { lista: usuarios, loading, error } = useSelector((state) => state.permisos);
 
   useEffect(() => {
-    // Al cargar la pantalla, pedimos los usuarios al backend
     dispatch(fetchUsuariosAdmin());
   }, [dispatch]);
 
   const handleCheckboxChange = (usuario, campoPermiso) => {
-    // Armamos el objeto con los permisos actuales, pero invertimos el que se acaba de clickear
     const nuevosPermisos = {
       puedeAnularCredito: usuario.puedeAnularCredito,
       puedeAnularCobranza: usuario.puedeAnularCobranza,
-      [campoPermiso]: !usuario[campoPermiso] // Invertimos el valor booleano
+      [campoPermiso]: !usuario[campoPermiso]
     };
     
-    // Disparamos la acción PUT inmediatamente (como pide la consigna del TPO)
     dispatch(togglePermiso({ id: usuario.id, permisos: nuevosPermisos }));
   };
 
@@ -76,7 +72,6 @@ import { fetchUsuariosAdmin, togglePermiso } from '../store/slices/permisosSlice
   );
 };
 
-// Objeto de estilos para mantener todo ordenado y profesional
 const styles = {
   page: { padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto' },
   title: { color: '#333', borderBottom: '2px solid #eee', paddingBottom: '10px' },

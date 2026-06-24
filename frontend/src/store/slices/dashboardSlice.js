@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../../api/apiClient';
 
-// 1. Creamos el Thunk para ir a buscar las estadísticas
 export const fetchEstadisticas = createAsyncThunk(
   'dashboard/fetchEstadisticas',
   async (_, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const fetchEstadisticas = createAsyncThunk(
   }
 );
 
-// 2. Creamos el slice con los 3 estados de la promesa
 const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState: {

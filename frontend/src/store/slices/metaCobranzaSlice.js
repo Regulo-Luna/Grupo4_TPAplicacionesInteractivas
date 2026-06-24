@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getMetas, createMeta, updateMeta, deleteMeta } from '../../api/metaCobranza';
 
-// 1. Thunks para las peticiones asíncronas
 export const fetchMetas = createAsyncThunk('metas/fetchAll', async (_, { rejectWithValue }) => {
     try {
         const response = await getMetas();
@@ -20,7 +19,6 @@ export const addMeta = createAsyncThunk('metas/add', async (data, { rejectWithVa
     }
 });
 
-// Nota: Recibe un objeto { id, data } porque los thunks solo aceptan un argumento
 export const editMeta = createAsyncThunk('metas/edit', async ({ id, data }, { rejectWithValue }) => {
     try {
         await updateMeta(id, data);
@@ -39,7 +37,6 @@ export const removeMeta = createAsyncThunk('metas/remove', async (id, { rejectWi
     }
 });
 
-// 2. El Slice
 const metaCobranzaSlice = createSlice({
     name: 'metas',
     initialState: {
@@ -50,8 +47,6 @@ const metaCobranzaSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // Solo manejamos el guardado de la lista en el fetch. 
-            // Para el add, edit y remove volveremos a llamar a fetchMetas desde el componente (es más seguro)
             .addCase(fetchMetas.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -64,7 +59,6 @@ const metaCobranzaSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Opcional: poner loading=true cuando guardamos/editamos/eliminamos
             .addCase(addMeta.pending, (state) => { state.loading = true; })
             .addCase(addMeta.fulfilled, (state) => { state.loading = false; })
             .addCase(addMeta.rejected, (state, action) => { state.loading = false; state.error = action.payload; })

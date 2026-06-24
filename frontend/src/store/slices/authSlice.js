@@ -40,7 +40,6 @@ const authSlice = createSlice({
       state.loading = false;
       state.user = action.payload;
       localStorage.setItem('authUser', JSON.stringify(action.payload));
-      // sincronizar token para apiClient
       localStorage.setItem('token', action.payload.token);
     };
     const onRejected = (state, action) => { state.loading = false; state.error = action.payload; };
