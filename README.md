@@ -77,6 +77,7 @@ tpejemplo/
 | fecha | LocalDate | Fecha de otorgamiento |
 | importeCuota | BigDecimal | Valor de cada cuota |
 | cantidadCuotas | Integer | Número de cuotas |
+| anulado | Boolean | Verificar anulación |
 
 ### Cuota
 | Campo | Tipo | Descripción |
@@ -93,6 +94,7 @@ tpejemplo/
 | id | Long (PK, auto) | Identificador |
 | cuota | FK → Cuota | Cuota que se está pagando |
 | importe | BigDecimal | Importe cobrado |
+| anulado | Boolean | Verificar anulación |
 
 ### Usuario
 | Campo | Tipo | Descripción |
@@ -132,12 +134,14 @@ tpejemplo/
 | POST | `/api/creditos` | Crear crédito (genera cuotas automáticamente) |
 | GET | `/api/creditos/{id}` | Buscar por ID (incluye cuotas con estado pagada/pendiente) |
 | GET | `/api/creditos/cliente/{dni}` | Créditos de un cliente |
+| DELETE | `/api/creditos/anular/{id}` | Anular créditos de un cliente |
 
 ### Cobranzas (requiere JWT)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | POST | `/api/cobranzas` | Registrar pago de una cuota |
 | GET | `/api/cobranzas/credito/{idCredito}` | Cobranzas de un crédito |
+| DELETE | `/api/cobranzas/{idCredito}` | Anular cobranzas de un crédito |
 
 ### Dashboard (requiere JWT)
 | Método | Endpoint | Descripción |
@@ -151,8 +155,14 @@ tpejemplo/
 | POST | `/api/metacobranza` | Agregar la meta que se quiere llegar |
 | PUT | `/api/metacobranza/{id}` | Actualizar la meta que se quiere llegar |
 | DELETE | `/api/metacobranza/{id}` | Borrar la meta que se quiere llegar |
----
 
+### Admin (requiere JWT)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/admin/usuarios` | Ver los usuarios del sistema |
+| PUT | `/api/admin/usuarios/{id}/permisos` | Actualizar permisos de los usuarios |
+
+---
 ## Seguridad JWT
 
 El flujo de autenticación es:
@@ -208,6 +218,7 @@ Cada operación asíncrona usa `createAsyncThunk`, que maneja automáticamente l
 
 ### Otros conceptos del frontend
 
+- **AdminRoute** 
 - **PrivateRoute** redirige a `/login` si `state.auth.user` es null
 - **Navbar** despacha `logout()` y limpia `localStorage`
 - **apiClient.js** centraliza todas las llamadas fetch con el header `Authorization: Bearer <token>`
@@ -221,7 +232,9 @@ Cada operación asíncrona usa `createAsyncThunk`, que maneja automáticamente l
 | `/clientes` | Clientes.jsx | Privado |
 | `/creditos` | Creditos.jsx | Privado |
 | `/cobranzas` | Cobranzas.jsx | Privado |
-| '/estadisticas | Dashboard.jsx | Privado |
+| `/estadisticas` | Dashboard.jsx | Privado |
+| `/admin/permisos` | GestorPermisos.jsx | Privado |
+
 
 ---
 
