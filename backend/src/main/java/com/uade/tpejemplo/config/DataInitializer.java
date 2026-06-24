@@ -23,15 +23,13 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         String adminUsername = "admin";
 
-        // Verificamos si ya existe el usuario 'admin' en la base de datos
         if (!usuarioRepository.existsByUsername(adminUsername)) {
             
-            // Creamos el usuario Administrador usando el patrón Builder de Lombok
             Usuario admin = Usuario.builder()
                     .username(adminUsername)
-                    .password(passwordEncoder.encode("admin")) // Contraseña: admin (encriptada)
+                    .password(passwordEncoder.encode("admin"))
                     .rol(Rol.ADMIN)
-                    .puedeAnularCredito(true)  // Como es ADMIN le damos todas las banderas en true
+                    .puedeAnularCredito(true)  
                     .puedeAnularCobranza(true)
                     .build();
 

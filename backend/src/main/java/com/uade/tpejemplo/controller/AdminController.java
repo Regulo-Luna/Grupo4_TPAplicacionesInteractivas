@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasRole('ADMIN')") // Protege toda la clase
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final UsuarioRepository usuarioRepository;
@@ -25,7 +25,7 @@ public class AdminController {
 
     @GetMapping("/usuarios")
     public List<UsuarioResponse> listarUsuarios() {
-        // Usamos el nuevo método del repositorio para traer SOLAMENTE a los USER
+        
         return usuarioRepository.findByRol(Rol.USER).stream()
             .map(u -> new UsuarioResponse(
                 u.getId(), 
@@ -49,7 +49,7 @@ public class AdminController {
         return new UsuarioResponse(
             usuario.getId(), 
             usuario.getUsername(), 
-            usuario.getRol().name(), // <-- ACÁ ESTÁ EL CAMBIO (.name())
+            usuario.getRol().name(),
             usuario.isPuedeAnularCredito(), 
             usuario.isPuedeAnularCobranza()
         );

@@ -39,7 +39,6 @@ public class CreditoController {
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/anular/{id}")
-// Puedes protegerlo a nivel de endpoint o desde el SecurityConfig
     public ResponseEntity<?> anularCredito(@PathVariable Long id) {
     creditoService.anularCredito(id);
     return ResponseEntity.ok(java.util.Map.of("mensaje", "Crédito anulado exitosamente"));

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
-    // Inyectamos los repositorios ya provistos por la cátedra
     private final ClienteRepository clienteRepository;
     private final CreditoRepository creditoRepository;
     private final CobranzaRepository cobranzaRepository;

@@ -12,7 +12,7 @@ public class UsuarioResponse {
     
     private Long id;
     private String username;
-    private String rol; // Lo enviamos como String para que el JSON sea más legible
+    private String rol;
     private boolean puedeAnularCredito;
     private boolean puedeAnularCobranza;
 
