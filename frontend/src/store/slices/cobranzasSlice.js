@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCobranzasPorCredito, registrarCobranza } from '../../api/cobranzas';
+import { getCobranzasPorCredito, registrarCobranza, anularCobranzaApi } from '../../api/cobranzas';
 
 export const fetchCobranzasPorCredito = createAsyncThunk('cobranzas/fetchPorCredito', async (idCredito, { rejectWithValue }) => {
   try {
@@ -17,6 +17,16 @@ export const addCobranza = createAsyncThunk('cobranzas/add', async (data, { reje
   }
 });
 
+// NUEVO THUNK PARA ANULAR
+export const anularCobranzaThunk = createAsyncThunk('cobranzas/anular', async (id, { rejectWithValue }) => {
+  try {
+    await anularCobranzaApi(id);
+    return id; // Retornamos el ID para identificar cuál actualizar en el estado
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.mensajes?.[0] || err.message);
+  }
+});
+
 const cobranzasSlice = createSlice({
   name: 'cobranzas',
   initialState: {
@@ -30,12 +40,30 @@ const cobranzasSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch
       .addCase(fetchCobranzasPorCredito.pending,   (state) => { state.loading = true;  state.error = null; })
       .addCase(fetchCobranzasPorCredito.fulfilled, (state, action) => { state.loading = false; state.lista = action.payload; })
       .addCase(fetchCobranzasPorCredito.rejected,  (state, action) => { state.loading = false; state.error = action.payload; })
+      
+      // Add
       .addCase(addCobranza.pending,                (state) => { state.loading = true;  state.error = null; })
       .addCase(addCobranza.fulfilled,              (state, action) => { state.loading = false; state.lista.push(action.payload); })
-      .addCase(addCobranza.rejected,               (state, action) => { state.loading = false; state.error = action.payload; });
+      .addCase(addCobranza.rejected,               (state, action) => { state.loading = false; state.error = action.payload; })
+
+      // Anular (NUEVO CASO)
+      .addCase(anularCobranzaThunk.pending,        (state) => { state.loading = true; state.error = null; })
+      .addCase(anularCobranzaThunk.fulfilled,      (state, action) => {
+        state.loading = false;
+        // Buscamos la cobranza y la marcamos como anulada
+        const index = state.lista.findIndex(c => c.id === action.payload);
+        if (index !== -1) {
+          state.lista[index].anulada = true;
+        }
+      })
+      .addCase(anularCobranzaThunk.rejected,       (state, action) => { 
+        state.loading = false; 
+        state.error = action.payload; 
+      });
   },
 });
 

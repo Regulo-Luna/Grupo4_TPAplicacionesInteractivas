@@ -1,31 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { getMetas, createMeta, deleteMeta, updateMeta } from '../api/metaCobranza';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMetas, addMeta, editMeta, removeMeta } from '../store/slices/metaCobranzaSlice';
 
 const MetaCobranza = () => {
-    const [metas, setMetas] = useState([]);
+    const dispatch = useDispatch();
+    // Leemos la lista y estados desde Redux
+    const { lista: metas, loading, error } = useSelector((state) => state.metas);
+    
+    const { user } = useSelector((state) => state.auth);
+    // Verificamos si es administrador (ajusta 'ADMIN' según cómo lo devuelva tu backend)
+    const isAdmin = user?.rol === 'ADMIN';
+    // Estados locales (Solo para controlar la interfaz del formulario)
     const [formData, setFormData] = useState({ mes: '', montoObjetivo: '' });
-    const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
+
     useEffect(() => {
-        fetchMetas();
-    }, []);
+        dispatch(fetchMetas());
+    }, [dispatch]);
 
-    const fetchMetas = async () => {
-    setLoading(true);
-    try {
-        const response = await getMetas();
-        
-        console.log("Datos directos del backend:", response); 
-        
-        setMetas(response || []);
-
-    } catch (error) {
-        console.error("Error al cargar metas:", error);
-    } finally {
-        setLoading(false);
-    }
-};
     const startEdit = (meta) => {
         setIsEditing(true);
         setEditingId(meta.id);
@@ -36,35 +29,31 @@ const MetaCobranza = () => {
         e.preventDefault();
         try {
             if (isEditing) {
-                await updateMeta(editingId, formData);
+                // Pasamos el ID y la data como un objeto al Thunk
+                await dispatch(editMeta({ id: editingId, data: formData })).unwrap();
             } else {
-                await createMeta(formData);
+                await dispatch(addMeta(formData)).unwrap();
             }
+            
             setFormData({ mes: '', montoObjetivo: '' });
             setIsEditing(false);
             setEditingId(null);
-            fetchMetas();
-        } catch (error) {
-            alert("Error al guardar/actualizar: " + (error.message || "Error desconocido"));
-        }
-    };
-    const handleCreate = async (e) => {
-        e.preventDefault();
-        try {
-            await createMeta(formData);
             
-            setFormData({ mes: '', montoObjetivo: '' });
-            await fetchMetas();
-        } catch (error) {
-            console.error("Error detallado:", error);
-        alert("Error al guardar: " + (error.response?.data?.message || "Revisa la consola"));
+            // Recargamos la lista actualizada
+            dispatch(fetchMetas());
+        } catch (err) {
+            alert("Error al guardar/actualizar: " + (err || "Error desconocido"));
         }
     };
 
     const handleDelete = async (id) => {
         if(window.confirm("¿Seguro que deseas eliminar esta meta?")) {
-            await deleteMeta(id);
-            fetchMetas();
+            try {
+                await dispatch(removeMeta(id)).unwrap();
+                dispatch(fetchMetas());
+            } catch (err) {
+                alert("Error al eliminar: " + err);
+            }
         }
     };
 
@@ -72,45 +61,65 @@ const MetaCobranza = () => {
         <div style={styles.container}>
             <h2>Gestión de Metas Financieras</h2>
             
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <input 
-                    placeholder="Mes (ej: Enero)" 
-                    value={formData.mes} 
-                    onChange={e => setFormData({...formData, mes: e.target.value})} 
-                    required 
-                    style={styles.input}
-                />
-                <input 
-                    type="number" 
-                    placeholder="Monto Objetivo" 
-                    value={formData.montoObjetivo} 
-                    onChange={e => setFormData({...formData, montoObjetivo: e.target.value})} 
-                    required 
-                    style={styles.input}
-                />
-                <button type="submit" style={isEditing ? styles.buttonUpdate : styles.buttonAdd}>
-                    {isEditing ? "Actualizar Meta" : "Agregar Meta"}
-                </button>
-                {isEditing && (
-                    <button type="button" onClick={() => { setIsEditing(false); setFormData({ mes: '', montoObjetivo: '' }); }} style={styles.buttonCancel}>
-                        Cancelar
+            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+            
+            {/* 1. Ocultamos todo el formulario de creación/edición a los usuarios normales */}
+            {isAdmin && (
+                <form onSubmit={handleSubmit} style={styles.form}>
+                    <input 
+                        placeholder="Mes (ej: Enero)" 
+                        value={formData.mes} 
+                        onChange={e => setFormData({...formData, mes: e.target.value})} 
+                        required 
+                        style={styles.input}
+                        disabled={loading}
+                    />
+                    <input 
+                        type="number" 
+                        placeholder="Monto Objetivo" 
+                        value={formData.montoObjetivo} 
+                        onChange={e => setFormData({...formData, montoObjetivo: e.target.value})} 
+                        required 
+                        style={styles.input}
+                        disabled={loading}
+                    />
+                    <button type="submit" style={isEditing ? styles.buttonUpdate : styles.buttonAdd} disabled={loading}>
+                        {loading ? "Cargando..." : (isEditing ? "Actualizar Meta" : "Agregar Meta")}
                     </button>
-                )}
-            </form>
+                    {isEditing && (
+                        <button type="button" onClick={() => { setIsEditing(false); setFormData({ mes: '', montoObjetivo: '' }); }} style={styles.buttonCancel} disabled={loading}>
+                            Cancelar
+                        </button>
+                    )}
+                </form>
+            )}
 
             <table style={styles.table}>
                 <thead>
-                    <tr><th>Mes</th><th>Monto</th><th>Acciones</th></tr>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Monto</th>
+                        {/* 2. Ocultamos el título de la columna de acciones */}
+                        {isAdmin && <th>Acciones</th>} 
+                    </tr>
                 </thead>
                 <tbody>
+                    {/* Un pequeño ajuste de seguridad aquí: usar metas?.length por si la lista tarda en cargar */}
+                    {loading && metas?.length === 0 && (
+                        <tr><td colSpan={isAdmin ? "3" : "2"}>Cargando metas...</td></tr>
+                    )}
                     {metas?.map(m => (
                         <tr key={m.id}>
                             <td>{m.mes}</td>
                             <td>${Number(m.montoObjetivo).toLocaleString()}</td>
-                            <td>
-                                <button onClick={() => startEdit(m)} style={styles.buttonEdit}>Editar</button>
-                                <button onClick={() => handleDelete(m.id)} style={styles.buttonDelete}>Eliminar</button>
-                            </td>
+                            
+                            {/* 3. Ocultamos los botones de la tabla */}
+                            {isAdmin && (
+                                <td>
+                                    <button onClick={() => startEdit(m)} style={styles.buttonEdit} disabled={loading}>Editar</button>
+                                    <button onClick={() => handleDelete(m.id)} style={styles.buttonDelete} disabled={loading}>Eliminar</button>
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>
@@ -130,4 +139,5 @@ const styles = {
     buttonDelete: { backgroundColor: '#dc3545', color: 'white', border: 'none', cursor: 'pointer', padding: '5px' },
     table: { width: '100%', borderCollapse: 'collapse', marginTop: '10px' }
 };
+
 export default MetaCobranza;

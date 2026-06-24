@@ -5,7 +5,11 @@ import { logout } from '../store/slices/authSlice';
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user     = useSelector((state) => state.auth.user);
+  // Extraemos el usuario desde el estado global (Redux)
+  const user = useSelector((state) => state.auth.user);
+
+  // Verificamos si el usuario existe y si su rol es 'ADMIN'
+  const isAdmin = user?.rol === 'ADMIN';
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,6 +25,12 @@ export default function Navbar() {
           <Link to="/creditos"  style={styles.link}>Créditos</Link>
           <Link to="/cobranzas" style={styles.link}>Cobranzas</Link>
           <Link to="/estadisticas" style={styles.link}>Estadísticas</Link>
+          
+          {/* Renderizado condicional: Solo se muestra si es ADMIN */}
+          {isAdmin && (
+             <Link to="/admin/permisos" style={styles.adminLink}>Gestor de Permisos</Link>
+          )}
+
           <span style={styles.user}>👤 {user.username}</span>
           <button onClick={handleLogout} style={styles.btn}>Salir</button>
         </div>
@@ -34,6 +44,8 @@ const styles = {
   brand: { fontWeight:'bold', fontSize:'1.2rem' },
   links: { display:'flex', alignItems:'center', gap:'20px' },
   link:  { color:'#90caf9', textDecoration:'none', fontWeight:'500' },
+  // Un estilo ligeramente diferente para destacar que es una función de administrador (opcional)
+  adminLink: { color: '#ffb74d', textDecoration:'none', fontWeight:'bold' }, 
   user:  { color:'#b0bec5', fontSize:'0.9rem' },
   btn:   { background:'#e53935', color:'white', border:'none', padding:'6px 14px', borderRadius:'6px', cursor:'pointer' },
 };

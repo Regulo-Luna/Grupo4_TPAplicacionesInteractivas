@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../api/apiClient';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchEstadisticas } from '../store/slices/dashboardSlice'; // Ajusta la ruta si es necesario
 import MetaCobranza from './MetaCobranza';
 
-
 const Dashboard = () => {
-  const [estadisticas, setEstadisticas] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  
+  // Extraemos la información del estado global de métricas
+  const { data: estadisticas, loading, error } = useSelector((state) => state.dashboard);
+  
+  // NUEVO: Extraemos el usuario autenticado para saber su rol
+  const { user } = useSelector((state) => state.auth);
+  const isAdmin = user?.rol === 'ADMIN';
 
   useEffect(() => {
-    const fetchEstadisticas = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/dashboard/stats');
-        setEstadisticas(response);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEstadisticas();
-  }, []);
+    // Disparamos la acción para ir a buscar los datos apenas carga la pantalla
+    dispatch(fetchEstadisticas());
+  }, [dispatch]);
 
   if (loading) return <div>Cargando métricas del sistema...</div>;
   if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
   return (
     <div style={styles.container}>
-      <h2>Panel de Estadísticas</h2>
+      <h2>Panel de Estadísticas {isAdmin && <span style={styles.adminBadge}>(Modo Admin)</span>}</h2>
+      
       <div style={styles.tarjetasMetricas}>
         <div style={styles.tarjeta}>
            <h3>Total Clientes</h3>
@@ -48,12 +43,14 @@ const Dashboard = () => {
            <p style={styles.valor}>{estadisticas?.montoTotalCobrado || 0}</p>
         </div>
       </div>
-        <div>
-            <MetaCobranza />
-        </div>
+      
+        {/* Opcional: Si quieres que SOLO el admin vea las metas, envuélvelo en isAdmin && */}
+        {isAdmin && (
+          <div style={{ marginTop: '30px', width: '100%' }}>
+              <MetaCobranza />
+          </div>
+        )}
     </div>
-    
-    
   );
 };
 
@@ -76,6 +73,7 @@ const styles = {
     display: 'flex',
     gap: '20px',
     justifyContent: 'center',
+    flexWrap: 'wrap', // Agregado para que se acomoden bien en pantallas chicas
   },
   tarjeta: {
     backgroundColor: 'white',
@@ -90,6 +88,16 @@ const styles = {
     fontWeight: 'bold',
     color: '#007bff',
     margin: '10px 0 0 0',
+  },
+  // NUEVO: Estilo para el pequeño aviso de "Modo Admin"
+  adminBadge: {
+    fontSize: '0.5em',
+    color: 'white',
+    backgroundColor: '#dc3545',
+    padding: '4px 8px',
+    borderRadius: '12px',
+    verticalAlign: 'middle',
+    marginLeft: '10px'
   }
 };
 
