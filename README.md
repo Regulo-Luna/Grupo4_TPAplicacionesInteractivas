@@ -26,11 +26,11 @@ Sistema de créditos y cobranzas desarrollado como ejemplo didáctico para la ma
 tpejemplo/
 ├── backend/               → Proyecto Spring Boot (Maven)
 │   └── src/main/java/com/uade/tpejemplo/
-│       ├── config/        → SecurityConfig (JWT + stateless)
-│       ├── controller/    → AuthController, ClienteController, CreditoController, CobranzaController, DashboardStatsController, MetaCobranzaController
+│       ├── config/        → SecurityConfig (JWT + stateless), DataInitializer
+│       ├── controller/    → AdminController, AuthController, ClienteController, CreditoController, CobranzaController, DashboardStatsController, MetaCobranzaController
 │       ├── dto/
-│       │   ├── request/   → ClienteRequest, CreditoRequest, CobranzaRequest, LoginRequest, RegisterRequest, MetaCobranzaRequest
-│       │   └── response/  → ClienteResponse, CreditoResponse, CuotaResponse, CobranzaResponse, AuthResponse, DashboardStatsResponseDTO
+│       │   ├── request/   → ClienteRequest, CreditoRequest, CobranzaRequest, LoginRequest, RegisterRequest, MetaCobranzaRequest, PermisosRequest
+│       │   └── response/  → ClienteResponse, CreditoResponse, CuotaResponse, CobranzaResponse, AuthResponse, DashboardStatsResponseDTO, UsuarioResponse
 │       ├── exception/     → ResourceNotFoundException, BusinessException, GlobalExceptionHandler
 │       ├── model/         → Cliente, Credito, Cuota, CuotaId, Cobranza, Usuario, Rol, MetaCobranza
 │       ├── repository/    → ClienteRepository, CreditoRepository, CuotaRepository, CobranzaRepository, UsuarioRepository, MetaCobranzaRepository
@@ -51,8 +51,11 @@ tpejemplo/
         │       ├── authSlice.js          → login/register thunks + logout
         │       ├── clientesSlice.js      → fetchClientes + addCliente
         │       ├── creditosSlice.js      → fetchCreditosPorCliente + addCredito
-        │       └── cobranzasSlice.js     → fetchCobranzasPorCredito + addCobranza
-        └── pages/         → Login.jsx, Register.jsx, Clientes.jsx, Creditos.jsx, Cobranzas.jsx, Dashboard.jsx, MetaCobranza.jsx
+        │       ├── cobranzasSlice.js     → fetchCobranzasPorCredito + addCobranza
+        │       ├── dashboardSlice.js   
+        │       ├── metaCobranzaSlice.js
+        │       ├── permisosSlice.js
+        └── pages/         → Login.jsx, Register.jsx, Clientes.jsx, Creditos.jsx, Cobranzas.jsx, Dashboard.jsx, MetaCobranza.jsx, GestorPermisos.jsx
 ```
 
 ---
